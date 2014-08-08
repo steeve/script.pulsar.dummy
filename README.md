@@ -2,16 +2,18 @@ Introduction
 ===================
 This is a sample dummy provider for Pulsar.
 
-When Pulsar wants to find a stream for a media, it will call all the providers install on the locally running XBMC instance.
+**PLEASE NOTE THAT THIS IS SUBJECT TO CHANGE QUITE HEAVILY**
 
-To be recognised as a Pulsar provider, the addon's name has to start with `script.pulsar.`.
+When Pulsar wants to find a stream for a media, it will call all the providers installed on the locally running XBMC instance.
+
+To be recognized as a Pulsar provider, the addon's name has to start with `script.pulsar.`.
 
 Pulsar will round up all the matching addons and call them using `XBMC.RunAddon()`.
 
 
 Payload
 =======
-Pulsar will call your addon in a Base64 encoded JSON payload.
+Pulsar will call your addon with a Base64 encoded JSON payload as first argument (`sys.argv[1]`).
 
 Here's a sample payload:
 
@@ -19,7 +21,8 @@ Here's a sample payload:
 {
 	"method": "search_episode"
 	"callback_url": "http://localhost:9001/callbacks/3404454616782090989"
-	"args": [...]}
+	"args": [...]
+}
 ```
 
 Searching
@@ -39,14 +42,16 @@ Depending on the method, the `args` key will contains different arguments:
 
 The callback URL
 ----------------
-The way for Pulsar to know about the provider finds are via a callback URL that the provider has to call before a certain timeout (5s right now).
+The way for Pulsar to know about the provider results is via a callback URL that the provider has to call before a certain timeout (5s right now).
 
 The callback URL expects a JSON body with the result payload.
 
 
 The results payload
 -------------------
-The result payload is an array of found torrents objects. The torrent object has the following schema:
+The result payload is an array of found torrents objects.
+
+The torrent object has the following schema:
 
 ```
 {
@@ -72,4 +77,4 @@ If not, you'll need to fill certain keys, so either:
 
 Once the list is complete, just send it to the callback URL.
 
-Also, no use to send more than a page worth of links.
+Also, there is no use to send more than a page worth of links to Pulsar, as they are supposed to be relevant anyway.
