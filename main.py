@@ -1,29 +1,55 @@
-import sys
-import json
-import base64
-import re
-import urllib
-import urllib2
+# First, you need to import the pulsar module
+# Make sure you declare Pulsar as dependency in the addon.xml or it won't work
+# You can read it at:
+# https://github.com/steeve/plugin.video.pulsar/blob/master/resources/site-packages/pulsar/provider.py
+from pulsar import provider
 
-PAYLOAD = json.loads(base64.b64decode(sys.argv[1]))
 
+# Raw search
+# query is always a string
 def search(query):
-    response = urllib2.urlopen("http://foo.bar/search?q=%s" % urllib.quote_plus(query))
-    data = response.read()
-    if response.headers.get("Content-Encoding", "") == "gzip":
-        import zlib
-        data = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress(data)
-    return [{"uri": magnet} for magnet in re.findall(r'magnet:\?[^\'"\s<>\[\]]+', data)]
+    response = provider.GET("http://foo.bar/search?q=%s" % provider.quote_plus(query)), params={
+        "q": query,
+    })
+    return provider.extract_magnet(resp.data)
+# To parse JSON you can do:
+#     items = resp.json()
+# To parse XML you can do:
+#     dom = resp.xml()
+# If you have RSS, you can let Pulsar parse it for you with:
+#     return provider.parse_rss(resp.xml())
 
 
-def search_episode(imdb_id, tvdb_id, name, season, episode):
-    return search("%s S%02dE%02d" % (name, season, episode))
+# Episode Payload Sample
+# {
+#     "imdb_id": "tt0092400",
+#     "tvdb_id": "76385",
+#     "title": "married with children",
+#     "season": 1,
+#     "episode": 1,
+#     "titles": null
+# }
+def search_episode(episode):
+    return search("%(title)s S%(season)02dE%(episode)02d" % episode)
 
 
-def search_movie(imdb_id, name, year):
-    return search(imdb_id)
+# Movie Payload Sample
+# Note that "titles" keys are countries, not languages
+# The titles are also normalized (accents removed, lower case etc...)
+# {
+#     "imdb_id": "tt1254207",
+#     "title": "big buck bunny",
+#     "year": 2008,
+#     "titles": {
+#         "es": "el gran conejo",
+#         "nl": "peach open movie project",
+#         "ru": "большои кролик",
+#         "us": "big buck bunny short 2008"
+#     }
+# }
+def search_movie(movie):
+    return search("%(title)s %(year)d" % movie)
 
-urllib2.urlopen(
-    PAYLOAD["callback_url"],
-    data=json.dumps(globals()[PAYLOAD["method"]](*PAYLOAD["args"]))
-)
+
+# This registers your module for use
+provider.register(search, search_movie, search_episode)

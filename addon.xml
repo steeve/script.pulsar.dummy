@@ -3,6 +3,11 @@
 	<requires>
 		<import addon="xbmc.python" version="2.12.0"/>
 	</requires>
+    <extension point="xbmc.addon.repository" name="Pulsar Dummy Provider">
+        <info compressed="false">http://localhost:10001/repository/steeve/script.pulsar.dummy/addons.xml</info>
+        <checksum>http://localhost:10001/repository/steeve/script.pulsar.dummy/addons.xml.md5</checksum>
+        <datadir zip="true">http://localhost:10001/repository/steeve/</datadir>
+    </extension>
 	<extension point="xbmc.python.script" library="main.py">
 		<provides>executable</provides>
 	</extension>
