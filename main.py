@@ -1,3 +1,5 @@
+# coding: utf-8
+
 # First, you need to import the pulsar module
 # Make sure you declare Pulsar as dependency in the addon.xml or it won't work
 # You can read it at:
@@ -8,10 +10,10 @@ from pulsar import provider
 # Raw search
 # query is always a string
 def search(query):
-    response = provider.GET("http://foo.bar/search?q=%s" % provider.quote_plus(query)), params={
+    resp = provider.GET("http://foo.bar/search?q=%s" % provider.quote_plus(query), params={
         "q": query,
     })
-    return provider.extract_magnet(resp.data)
+    return provider.extract_magnets(resp.data)
 # To parse JSON you can do:
 #     items = resp.json()
 # To parse XML you can do:
