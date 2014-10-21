@@ -10,6 +10,18 @@ To be recognized as a Pulsar provider, the addon's name has to start with `scrip
 
 Pulsar will round up all the matching addons and call them using `XBMC.RunAddon()`.
 
+Testing providers
+=================
+
+You can test your provider by calling Pulsar on these endpoints
+
+```
+http://localhost:10001/provider/<PROVIDER_ID>/movie/<IMDB_ID>
+http://localhost:10001/provider/<PROVIDER_ID>/show/<TVDB_ID>/season/<SEASON>/episode/<EPISODE>
+```
+
+It will print the search payload and the return results, as interpreted by Pulsar.
+
 
 Provider SDK
 ============
