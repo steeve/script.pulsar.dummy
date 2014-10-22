@@ -10,7 +10,8 @@ from pulsar import provider
 # Raw search
 # query is always a string
 def search(query):
-    resp = provider.GET("http://foo.bar/search?q=%s" % provider.quote_plus(query), params={
+    # Will issue a GET call to http://foo.bar/search?q=query (properly urlencoded)
+    resp = provider.GET("http://foo.bar/search", params={
         "q": query,
     })
     return provider.extract_magnets(resp.data)
